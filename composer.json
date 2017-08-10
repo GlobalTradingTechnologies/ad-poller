@@ -1,0 +1,30 @@
+{
+    "name": "gtt/ad-poller",
+    "description": "Polls Active Directory through ldap and dispatches payload using event dispatcher",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "fduch",
+            "email": "alex.medwedew@gmail.com"
+        }
+    ],
+    "require": {
+        "zendframework/zend-ldap": "^2.8",
+        "symfony/event-dispatcher": "^2.3|^3.0",
+        "doctrine/orm": "^2.5",
+        "ramsey/uuid-doctrine": "^1.4",
+        "symfony/console": "^2.3|^3.0"
+    },
+    "autoload": {
+        "psr-4": { "Gtt\\ADPoller\\": "" },
+        "exclude-from-classmap": [
+            "/Tests/"
+        ]
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "1.x-dev"
+        }
+    }
+}
