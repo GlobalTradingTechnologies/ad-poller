@@ -13,7 +13,6 @@
         "zendframework/zend-ldap": "^2.8",
         "symfony/event-dispatcher": "^2.3|^3.0",
         "doctrine/orm": "^2.5",
-        "ramsey/uuid-doctrine": "^1.4",
         "symfony/console": "^2.3|^3.0"
     },
     "autoload": {
