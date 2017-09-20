@@ -356,7 +356,6 @@ class Poller
             }
         }
 
-        // TODO check that ldap could not return empty entries (eg. if there is no required attribute)
         return $this->ldap->searchEntries($filter, null, Ldap::SEARCH_SCOPE_SUB, $this->entryAttributesToFetch);
     }
 }
