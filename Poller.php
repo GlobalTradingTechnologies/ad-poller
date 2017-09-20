@@ -323,13 +323,26 @@ class Poller
             $hostForDeleted = rtrim($originalHost, "/") . "/" . urlencode(
                 sprintf("<WKGUID=%s,%s>", self::WK_GUID_DELETED_OBJECTS_CONTAINER_W, $defaultNamingContext)
             );
+
+            // hack that workarounds zendframework/zend-ldap connection issues.
+            // should be removed after resolution of https://github.com/zendframework/zend-ldap/pull/69
+            if (!preg_match('~^ldap(?:i|s)?://~', $hostForDeleted)) {
+                $schema = "ldap://";
+                if ((isset($options['port']) && $options['port'] == 636) || (isset($options['useSsl']) && $options['useSsl'] == true)) {
+                    $schema = "ldaps://";
+                }
+                $hostForDeleted = $schema.$hostForDeleted;
+            }
+            // end of hack
+
             $options['host'] = $hostForDeleted;
+
             // force reconnection for search of deleted entries
             $this->ldap->setOptions($options);
             $this->ldap->disconnect();
 
             $deleted = $this->search(Filter::andFilter(
-                Filter::equals('isEntryDeactivated', 'TRUE'),
+                Filter::equals('isDeleted', 'TRUE'),
                 Filter::greaterOrEqual('uSNChanged', $usnChangedStartFrom),
                 Filter::lessOrEqual('uSNChanged', $highestCommitedUSN)
             ));
