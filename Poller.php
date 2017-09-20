@@ -27,7 +27,7 @@ use Zend\Ldap\Node\RootDse\ActiveDirectory;
 /**
  * Active Directory LDAP poller
  *
- * TODO perform paginated requests
+ * TODO perform paginated requests after resolving of https://github.com/zendframework/zend-ldap/issues/41
  *
  * @see https://msdn.microsoft.com/en-us/library/ms677627.aspx
  *
@@ -64,11 +64,18 @@ class Poller
     private $entityManager;
 
     /**
-     * Base ldap search filter used to describe objects to fetch
+     * Base ldap search filter used to define objects during incremental fetch
      *
      * @var AbstractFilter
      */
-    private $baseEntryFilter;
+    private $incrementalSyncEntryFilter;
+
+    /**
+     * Base ldap search filter used to define objects during full fetch
+     *
+     * @var AbstractFilter
+     */
+    private $fullSyncEntryFilter;
 
     /**
      * Base list of AD attributes to fetch
@@ -113,7 +120,8 @@ class Poller
      * @param SynchronizerInterface  $synchronizer
      * @param Ldap                   $ldap
      * @param EntityManagerInterface $em
-     * @param AbstractFilter         $entryFilter
+     * @param AbstractFilter|string  $fullSyncEntryFilter
+     * @param AbstractFilter|string  $incrementalSyncEntryFilter
      * @param array                  $entryAttributesToFetch
      * @param bool                   $detectDeleted
      * @param string                 $pollerName
@@ -122,31 +130,20 @@ class Poller
         SynchronizerInterface $synchronizer,
         Ldap $ldap,
         EntityManagerInterface $em,
-        $entryFilter,
+        $fullSyncEntryFilter,
+        $incrementalSyncEntryFilter,
         array $entryAttributesToFetch = [],
         $detectDeleted = true,
         $pollerName = 'default')
     {
-        $this->synchronizer           = $synchronizer;
-        $this->ldap                   = $ldap;
-        $this->entityManager          = $em;
-        $this->detectDeleted          = $detectDeleted;
-        $this->name                   = $pollerName;
-        $this->entryAttributesToFetch = $entryAttributesToFetch;
-
-        if (is_string($entryFilter)) {
-            $this->baseEntryFilter = new Filter\StringFilter($entryFilter);
-        } elseif ($entryFilter instanceof AbstractFilter) {
-            $this->baseEntryFilter = $entryFilter;
-        } else {
-            throw new InvalidArgumentException(
-                sprintf(
-                    'baseEntryFilter argument must be either instance of %s or string. %s given',
-                    AbstractFilter::class,
-                    gettype($entryFilter)
-                )
-            );
-        }
+        $this->synchronizer               = $synchronizer;
+        $this->ldap                       = $ldap;
+        $this->entityManager              = $em;
+        $this->fullSyncEntryFilter        = $this->setupEntryFilter($fullSyncEntryFilter);
+        $this->incrementalSyncEntryFilter = $this->setupEntryFilter($incrementalSyncEntryFilter);
+        $this->entryAttributesToFetch     = $entryAttributesToFetch;
+        $this->detectDeleted              = $detectDeleted;
+        $this->name                       = $pollerName;
     }
 
     /**
@@ -243,6 +240,34 @@ class Poller
     }
 
     /**
+     * Validates specified zend ldap filter and cast it to AbstractFilter implementation
+     *
+     * @param string|AbstractFilter $entryFilter zend ldap filter
+     *
+     * @return AbstractFilter
+     *
+     * @throws InvalidArgumentException in case of invalid filter
+     */
+    private function setupEntryFilter($entryFilter)
+    {
+        if (is_string($entryFilter)) {
+            $filter = new Filter\StringFilter($entryFilter);
+        } elseif ($entryFilter instanceof AbstractFilter) {
+            $filter = $entryFilter;
+        } else {
+            throw new InvalidArgumentException(
+                sprintf(
+                    'baseEntryFilter argument must be either instance of %s or string. %s given',
+                    AbstractFilter::class,
+                    gettype($entryFilter)
+                )
+            );
+        }
+
+        return $filter;
+    }
+
+    /**
      * Returns true is full AD sync required and false otherwise
      *
      * @param bool          $forceFullSync
@@ -284,7 +309,7 @@ class Poller
     private function fullSync(PollTask $currentTask, $highestCommitedUSN)
     {
         $searchFilter = Filter::andFilter(
-            $this->baseEntryFilter,
+            $this->fullSyncEntryFilter,
             Filter::greaterOrEqual('uSNChanged', 0),
             Filter::lessOrEqual('uSNChanged', $highestCommitedUSN)
         );
@@ -308,7 +333,7 @@ class Poller
     {
         // fetch changed
         $changedFilter = Filter::andFilter(
-            $this->baseEntryFilter,
+            $this->incrementalSyncEntryFilter,
             Filter::greaterOrEqual('uSNChanged', $usnChangedStartFrom),
             Filter::lessOrEqual('uSNChanged', $highestCommitedUSN)
         );
