@@ -1,5 +1,5 @@
 Active Directory Change Poller
-=================================
+==============================
 
 This package is PHP implementation of [algorithm](https://msdn.microsoft.com/en-us/library/ms677627.aspx) of polling for changes in Active Directory servers 
 using [uSNChanged](https://msdn.microsoft.com/en-us/library/ms677627.aspx) attribute with additional 
@@ -139,7 +139,7 @@ php bin/console gtt:pollers:run --poller=mypoller
 
 Framework integration
 =====================
-There is a [gtt/ad-poller-bundle](https://github.com/gtt/ad-poller-bundle) which integrates component in Symfony2+ ecosystem
+There is a [gtt/ad-poller-bundle](https://github.com/GlobalTradingTechnologies/ad-poller-bundle) which integrates component in Symfony2+ ecosystem
 
 Testing
 =======
