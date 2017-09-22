@@ -78,7 +78,7 @@ class Poller
         LdapFetcher $fetcher,
         SynchronizerInterface $synchronizer,
         EntityManagerInterface $em,
-        $detectDeleted = true,
+        $detectDeleted = false,
         $pollerName = 'default')
     {
         $this->fetcher       = $fetcher;
