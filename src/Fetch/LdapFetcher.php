@@ -41,6 +41,13 @@ class LdapFetcher
     private $ldap;
 
     /**
+     * Base ldap search filter used to define objects during full fetch
+     *
+     * @var AbstractFilter
+     */
+    private $fullSyncEntryFilter;
+
+    /**
      * Base ldap search filter used to define objects during incremental fetch
      *
      * @var AbstractFilter
@@ -48,11 +55,11 @@ class LdapFetcher
     private $incrementalSyncEntryFilter;
 
     /**
-     * Base ldap search filter used to define objects during full fetch
+     * Base ldap search filter used to define objects during deleted fetch
      *
      * @var AbstractFilter
      */
-    private $fullSyncEntryFilter;
+    private $deletedSyncEntryFilter;
 
     /**
      * Base list of AD attributes to fetch
@@ -80,20 +87,23 @@ class LdapFetcher
     /**
      * Fetcher constructor.
      *
-     * @param Ldap                  $ldap
-     * @param AbstractFilter|string $fullSyncEntryFilter
-     * @param AbstractFilter|string $incrementalSyncEntryFilter
-     * @param array                 $entryAttributesToFetch
+     * @param Ldap                       $ldap
+     * @param AbstractFilter|string|null $fullSyncEntryFilter
+     * @param AbstractFilter|string|null $incrementalSyncEntryFilter
+     * @param AbstractFilter|string|null $deletedSyncEntryFilter
+     * @param array                      $entryAttributesToFetch
      */
     public function __construct(
         Ldap $ldap,
-        $fullSyncEntryFilter,
-        $incrementalSyncEntryFilter,
+        $fullSyncEntryFilter = null,
+        $incrementalSyncEntryFilter = null,
+        $deletedSyncEntryFilter = null,
         array $entryAttributesToFetch = [])
     {
         $this->ldap                       = $ldap;
         $this->fullSyncEntryFilter        = $this->setupEntryFilter($fullSyncEntryFilter);
         $this->incrementalSyncEntryFilter = $this->setupEntryFilter($incrementalSyncEntryFilter);
+        $this->deletedSyncEntryFilter     = $this->setupEntryFilter($deletedSyncEntryFilter);
         $this->entryAttributesToFetch     = $entryAttributesToFetch;
     }
 
@@ -151,10 +161,14 @@ class LdapFetcher
     public function fullFetch($uSNChangedTo)
     {
         $searchFilter = Filter::andFilter(
-            $this->fullSyncEntryFilter,
             Filter::greaterOrEqual('uSNChanged', 0),
             Filter::lessOrEqual('uSNChanged', $uSNChangedTo)
         );
+
+        if ($this->fullSyncEntryFilter) {
+            $searchFilter = $searchFilter->addAnd($this->fullSyncEntryFilter);
+        }
+
         $entries = $this->search($searchFilter);
 
         return $entries;
@@ -177,10 +191,12 @@ class LdapFetcher
     {
         // fetch changed
         $changedFilter = Filter::andFilter(
-            $this->incrementalSyncEntryFilter,
             Filter::greaterOrEqual('uSNChanged', $uSNChangedFrom),
             Filter::lessOrEqual('uSNChanged', $uSNChangedTo)
         );
+        if ($this->incrementalSyncEntryFilter) {
+            $changedFilter = $changedFilter->addAnd($this->incrementalSyncEntryFilter);
+        }
         $changed = $this->search($changedFilter);
 
         // fetch deleted
@@ -210,12 +226,15 @@ class LdapFetcher
             $this->ldap->setOptions($options);
             $this->ldap->disconnect();
 
-            // TODO add base entry filter here?
-            $deleted = $this->search(Filter::andFilter(
+            $deletedFilter = Filter::andFilter(
                 Filter::equals('isDeleted', 'TRUE'),
                 Filter::greaterOrEqual('uSNChanged', $uSNChangedFrom),
                 Filter::lessOrEqual('uSNChanged', $uSNChangedTo)
-            ));
+            );
+            if ($this->deletedSyncEntryFilter) {
+                $deletedFilter = $deletedFilter->addAnd($this->deletedSyncEntryFilter);
+            }
+            $deleted = $this->search($deletedFilter);
         }
 
         return [$changed, $deleted];
@@ -244,12 +263,16 @@ class LdapFetcher
      *
      * @param string|AbstractFilter $entryFilter zend ldap filter
      *
-     * @return AbstractFilter
+     * @return AbstractFilter|null
      *
      * @throws InvalidArgumentException in case of invalid filter
      */
     private function setupEntryFilter($entryFilter)
     {
+        if ($entryFilter == null) {
+            return null;
+        }
+
         if (is_string($entryFilter)) {
             $filter = new Filter\StringFilter($entryFilter);
         } elseif ($entryFilter instanceof AbstractFilter) {

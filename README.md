@@ -81,11 +81,13 @@ $ldapConnector = new Ldap(
 // configure ldap fetcher
 $ldapFetcher = new \Gtt\ADPoller\Fetch\LdapFetcher(
     $ldapConnector,
-    // Ldap filter used to fetch entries during full sync
+    // Optional ldap filter describes entries to fetch during full sync
     '&(objectClass=user)(objectCategory=person))',
-    // Ldap filter used to fetch entries during incremental sync.
+    // Optional ldap filter describes entries to fetch during incremental sync.
     // It can differ from the previous one if you want track deactivatation of entities
     // (during full sync you need only active, but here - not)
+    '&(objectClass=user)(objectCategory=person))',
+    // Optional ldap filter describes deleted entries to fetch during incremental sync
     '&(objectClass=user)(objectCategory=person))',
     // list of properties to be fetched
     ['cn', 'displayname','telephonenumber', 'description']

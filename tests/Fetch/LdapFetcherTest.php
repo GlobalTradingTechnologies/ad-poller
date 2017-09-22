@@ -21,12 +21,18 @@ use Zend\Ldap\Node\RootDse\ActiveDirectory;
 
 class LdapFetcherTest extends \PHPUnit_Framework_TestCase
 {
+    public function testNullFilterApplicable()
+    {
+        new LdapFetcher($this->getMock(Ldap::class));
+    }
+
     public function testStringFilterApplicable()
     {
         new LdapFetcher(
             $this->getMock(Ldap::class),
             '(&(a=b)(c=d))',
-            '(!(a=v))'
+            '(!(a=v))',
+            '(cn=*)'
             )
         ;
     }
@@ -63,7 +69,7 @@ class LdapFetcherTest extends \PHPUnit_Framework_TestCase
         $ldap->searchEntries(
             Argument::that(
                 function(AbstractFilter $filter) {
-                    return $filter->toString() === "(&(a>5)(uSNChanged>=0)(uSNChanged<=5))";
+                    return $filter->toString() === "(&(&(uSNChanged>=0)(uSNChanged<=5))(a>5))";
                 }
             ),
             Argument::any(),
@@ -71,7 +77,7 @@ class LdapFetcherTest extends \PHPUnit_Framework_TestCase
             ['attrs']
         )->shouldBeCalled();
 
-        $fetcher = new LdapFetcher($ldap->reveal(), 'a>5', 'smth', ['attrs']);
+        $fetcher = new LdapFetcher($ldap->reveal(), 'a>5', null, null, ['attrs']);
         $fetcher->fullFetch(5);
     }
 
@@ -83,7 +89,7 @@ class LdapFetcherTest extends \PHPUnit_Framework_TestCase
         $ldap->searchEntries(
             Argument::that(
                 function(AbstractFilter $filter) {
-                    return $filter->toString() === "(&(a>5)(uSNChanged>=1)(uSNChanged<=10))";
+                    return $filter->toString() === "(&(&(uSNChanged>=1)(uSNChanged<=10))(a>5))";
                 }
             ),
             Argument::any(),
@@ -91,7 +97,7 @@ class LdapFetcherTest extends \PHPUnit_Framework_TestCase
             ['attrs']
         )->shouldBeCalled();
 
-        $fetcher = new LdapFetcher($ldap->reveal(), 'smth', 'a>5', ['attrs']);
+        $fetcher = new LdapFetcher($ldap->reveal(), null, 'a>5', null, ['attrs']);
         $fetcher->incrementalFetch(1, 10);
     }
 
@@ -116,7 +122,7 @@ class LdapFetcherTest extends \PHPUnit_Framework_TestCase
                 [
                     $this->callback(
                         function(AbstractFilter $filter) {
-                            return $filter->toString() === "(&(a>5)(uSNChanged>=1)(uSNChanged<=10))";
+                            return $filter->toString() === "(&(&(uSNChanged>=1)(uSNChanged<=10))(a>5))";
                         }
                     ),
                     $this->anything(),
@@ -126,7 +132,7 @@ class LdapFetcherTest extends \PHPUnit_Framework_TestCase
                 [
                     $this->callback(
                         function(AbstractFilter $filter) {
-                            return $filter->toString() === "(&(isDeleted=TRUE)(uSNChanged>=1)(uSNChanged<=10))";
+                            return $filter->toString() === "(&(&(isDeleted=TRUE)(uSNChanged>=1)(uSNChanged<=10))(b>1))";
                         }
                     ),
                     $this->anything(),
@@ -136,7 +142,7 @@ class LdapFetcherTest extends \PHPUnit_Framework_TestCase
             )
         ;
 
-        $fetcher = new LdapFetcher($ldap, 'smth', 'a>5', ['attrs']);
+        $fetcher = new LdapFetcher($ldap, null, 'a>5', 'b>1', ['attrs']);
         $fetcher->incrementalFetch(1, 10, true);
     }
 }
