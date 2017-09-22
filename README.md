@@ -131,7 +131,7 @@ $pollerCollection = new \Gtt\ADPoller\PollerCollection();
 $pollerCollection->addPoller($poller);
 // create application and command
 $application = new \Symfony\Component\Console\Application();
-$application->add(\Gtt\ADPoller\Command\PollCommand($pollerCollection));
+$application->add(new \Gtt\ADPoller\Command\PollCommand($pollerCollection));
 $application->run();
 
 ```
