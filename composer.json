@@ -10,16 +10,21 @@
         }
     ],
     "require": {
+        "php": ">=5.5",
         "zendframework/zend-ldap": "^2.8",
         "symfony/event-dispatcher": "^2.3|^3.0",
         "doctrine/orm": "^2.5",
         "symfony/console": "^2.3|^3.0"
     },
+    "require-dev": {
+        "phpunit/phpunit": "^4.8",
+        "phpspec/prophecy": "^1.7"
+    },
     "autoload": {
-        "psr-4": { "Gtt\\ADPoller\\": "" },
-        "exclude-from-classmap": [
-            "/Tests/"
-        ]
+        "psr-4": { "Gtt\\ADPoller\\": "src" }
+    },
+    "autoload-dev": {
+        "psr-4": {"Gtt\\ADPoller\\": "tests"}
     },
     "extra": {
         "branch-alias": {

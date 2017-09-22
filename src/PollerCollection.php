@@ -34,6 +34,8 @@ class PollerCollection implements IteratorAggregate
      * Add poller to collection
      *
      * @param Poller $poller
+     *
+     * @throws InvalidArgumentException in case when poller with the same name already exists
      */
     public function addPoller(Poller $poller)
     {

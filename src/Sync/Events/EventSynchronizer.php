@@ -88,8 +88,12 @@ class EventSynchronizer implements SynchronizerInterface
         foreach ($entries as $key => &$entry) {
             foreach ($binaryAttributes as $binaryAttribute) {
                 if (array_key_exists($binaryAttribute, $entry)) {
-                    foreach ($entry[$binaryAttribute] as &$value) {
-                        $value = bin2hex($value);
+                    if (is_array($entry[$binaryAttribute])) {
+                        foreach ($entry[$binaryAttribute] as &$value) {
+                            $value = bin2hex($value);
+                        }
+                    } else {
+                        $entry[$binaryAttribute] = bin2hex($entry[$binaryAttribute]);
                     }
                 }
             }

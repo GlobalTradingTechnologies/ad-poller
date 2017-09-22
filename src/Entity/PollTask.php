@@ -90,6 +90,7 @@ class PollTask
      * @var PollTaskStatus
      *
      * @ORM\ManyToOne(targetEntity="PollTaskStatus")
+     * @ORM\JoinColumn(name="status_id", referencedColumnName="id", nullable=false)
      */
     private $status;
 
@@ -192,13 +193,21 @@ class PollTask
     /**
      * @return string
      */
+    public function getPollerName()
+    {
+        return $this->pollerName;
+    }
+
+    /**
+     * @return string
+     */
     public function getInvocationId()
     {
         return $this->invocationId;
     }
 
     /**
-     * @return integer
+     * @return int
      */
     public function getMaxUSNChangedValue()
     {
@@ -211,5 +220,61 @@ class PollTask
     public function getRootDseDnsHostName()
     {
         return $this->rootDseDnsHostName;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isFullSync()
+    {
+        return $this->isFullSync;
+    }
+
+    /**
+     * @return PollTaskStatus
+     */
+    public function getStatus()
+    {
+        return $this->status;
+    }
+
+    /**
+     * @return int
+     */
+    public function getFetchedEntitiesAmount()
+    {
+        return $this->fetchedEntitiesAmount;
+    }
+
+    /**
+     * @return string
+     */
+    public function getErrorMessage()
+    {
+        return $this->errorMessage;
+    }
+
+    /**
+     * @return Datetime
+     */
+    public function getCreated()
+    {
+        return $this->created;
+    }
+
+    /**
+     * @return Datetime
+     */
+    public function getClosed()
+    {
+        return $this->closed;
+    }
+
+    /**
+     * @return PollTask|null
+     */
+    public function getParent()
+    {
+        return $this->parent;
     }
 }
