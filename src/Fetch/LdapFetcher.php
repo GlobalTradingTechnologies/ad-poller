@@ -22,6 +22,8 @@ use Zend\Ldap\Node\RootDse\ActiveDirectory;
 /**
  * Fetches Active Directory resource using ldap API
  *
+ * TODO perform paginated requests after resolving of https://github.com/zendframework/zend-ldap/issues/41
+ *
  * @author fduch <alex.medwedew@gmail.com>
  */
 class LdapFetcher

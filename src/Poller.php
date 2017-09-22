@@ -20,9 +20,7 @@ use Gtt\ADPoller\ORM\Repository\PollTaskRepository;
 use Gtt\ADPoller\Sync\SynchronizerInterface;
 
 /**
- * Active Directory LDAP poller
- *
- * TODO perform paginated requests after resolving of https://github.com/zendframework/zend-ldap/issues/41
+ * Active Directory poller
  *
  * @see https://msdn.microsoft.com/en-us/library/ms677627.aspx
  *
