@@ -205,8 +205,9 @@ class LdapFetcher
             $defaultNamingContext = $this->getRootDse()->getDefaultNamingContext();
             $options              = $this->ldap->getOptions();
             $originalHost         = isset($options['host']) ? $options['host'] : '';
-            $hostForDeleted = rtrim($originalHost, "/") . "/" .
-                sprintf("<WKGUID=%s,%s>", self::WK_GUID_DELETED_OBJECTS_CONTAINER_W, $defaultNamingContext)
+            $hostForDeleted = rtrim($originalHost, "/") . "/" .urlencode(
+                    sprintf("<WKGUID=%s,%s>", self::WK_GUID_DELETED_OBJECTS_CONTAINER_W, $defaultNamingContext)
+                )
             ;
 
             // hack that workarounds zendframework/zend-ldap connection issues.
