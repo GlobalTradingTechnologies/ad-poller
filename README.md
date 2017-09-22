@@ -1,6 +1,11 @@
 Active Directory Change Poller
 ==============================
 
+[![Build Status](https://travis-ci.org/GlobalTradingTechnologies/ad-poller.svg?branch=master)](https://travis-ci.org/GlobalTradingTechnologies/ad-poller)
+[![Latest Stable Version](https://poser.pugx.org/gtt/ad-poller/version)](https://packagist.org/packages/gtt/ad-poller)
+[![Latest Unstable Version](https://poser.pugx.org/gtt/ad-poller/v/unstable)](//packagist.org/packages/gtt/ad-poller)
+[![License](https://poser.pugx.org/gtt/ad-poller/license)](https://packagist.org/packages/gtt/ad-poller)
+
 This package is PHP implementation of [algorithm](https://msdn.microsoft.com/en-us/library/ms677627.aspx) of polling for changes in Active Directory servers 
 using [uSNChanged](https://msdn.microsoft.com/en-us/library/ms677627.aspx) attribute with additional 
 features allowing custom adjustments for Active Directory fetching processes and changesets handling. 
