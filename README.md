@@ -24,7 +24,7 @@ The component consists of three main parts: [poller](#poller), [fetcher](#fetche
 ### Poller
 This is a heart of the library and base implementation of original [polling algorithm](https://msdn.microsoft.com/en-us/library/ms677627.aspx).
 Uses [fetcher](#fetcher) to interact with Active Directory Server in order to fetch changesets and [synchronizer](#synchronizer)
-in order to process obtained changesets.
+to process obtained changesets.
 
 See [Poller](https://github.com/GlobalTradingTechnologies/ad-poller/blob/master/src/Poller.php) implementation for details.
 
