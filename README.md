@@ -42,8 +42,8 @@ for full sync - [FullSyncEvent](https://github.com/GlobalTradingTechnologies/ad-
 
 See [EventSynchronizer](https://github.com/GlobalTradingTechnologies/ad-poller/blob/master/src/Sync/Events/EventSynchronizer.php) implementation for details.
 
-Component provides [SynchronizerInterface](https://github.com/GlobalTradingTechnologies/ad-poller/blob/master/src/Sync/SynchronizerInterface.php) allowing implement your own
-synchronizer for custom aims.   
+Component provides [SynchronizerInterface](https://github.com/GlobalTradingTechnologies/ad-poller/blob/master/src/Sync/SynchronizerInterface.php) which allows implementation of your own
+synchronizer for custom aims.
 
 Setup and usage
 ===============
