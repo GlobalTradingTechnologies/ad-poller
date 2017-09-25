@@ -18,6 +18,8 @@ use Gtt\ADPoller\Entity\PollTask;
 use Gtt\ADPoller\Fetch\LdapFetcher;
 use Gtt\ADPoller\ORM\Repository\PollTaskRepository;
 use Gtt\ADPoller\Sync\SynchronizerInterface;
+use InvalidArgumentException;
+use Psr\Log\LoggerInterface;
 
 /**
  * Active Directory poller
@@ -64,6 +66,20 @@ class Poller
     private $name;
 
     /**
+     * Logger
+     *
+     * @var LoggerInterface
+     */
+    private $logger;
+
+    /**
+     * List of entry attributes to log during incremental sync
+     *
+     * @var array
+     */
+    private $incrementalAttributesToLog;
+
+    /**
      * Poller constructor.
      *
      * @param LdapFetcher            $fetcher
@@ -94,6 +110,23 @@ class Poller
     public function getName()
     {
         return $this->name;
+    }
+
+    /**
+     * Enables and adjusts logging
+     *
+     * @param LoggerInterface $logger
+     * @param array           $incrementalAttributesToLog
+     *
+     * @throws InvalidArgumentException in case of empty $incrementalAttributesToLog
+     */
+    public function setupLogging(LoggerInterface $logger, array $incrementalAttributesToLog = ['dn'])
+    {
+        if (empty($incrementalAttributesToLog)) {
+            throw new InvalidArgumentException('List of entry attributes to be logged during incremental sync cannot be empty');
+        }
+        $this->logger                     = $logger;
+        $this->incrementalAttributesToLog = $incrementalAttributesToLog;
     }
 
     /**
@@ -214,6 +247,7 @@ class Poller
     {
         $entries = $this->fetcher->fullFetch($highestCommitedUSN);
         $this->synchronizer->fullSync($this->name, $currentTask->getId(), $entries);
+        $this->logFullSync($entries);
 
         return count($entries);
     }
@@ -231,8 +265,42 @@ class Poller
     {
         list($changed, $deleted) = $this->fetcher->incrementalFetch($usnChangedStartFrom, $highestCommitedUSN, $this->detectDeleted);
         $this->synchronizer->incrementalSync($this->name, $currentTask->getId(), $changed, $deleted);
+        $this->logIncrementalSync($changed, $deleted);
 
         return count($changed) + count($deleted);
+    }
+
+    /**
+     * Logs full sync if needed
+     *
+     * @param array $entries
+     */
+    private function logFullSync($entries)
+    {
+        if ($this->logger) {
+            $this->logger->info(sprintf("Full sync processed. Entries count: %d.", count($entries)));
+        }
+    }
+
+    /**
+     * Logs incremental sync if needed
+     *
+     * @param $changed
+     * @param $deleted
+     */
+    private function logIncrementalSync($changed, $deleted)
+    {
+        if ($this->logger) {
+            $entriesLogReducer = function ($entry) {
+                return array_intersect_key($entry, array_flip($this->incrementalAttributesToLog));
+            };
+            $changedToLog      = array_map($entriesLogReducer, $changed);
+            $deletedToLog      = array_map($entriesLogReducer, $deleted);
+            $this->logger->info(
+                sprintf("Incremental changeset processed. Changed: %d, Deleted: %d.", count($changed), count($deleted)),
+                ['changed' => $changedToLog, 'deleted' => $deletedToLog]
+            );
+        }
     }
 }
 
