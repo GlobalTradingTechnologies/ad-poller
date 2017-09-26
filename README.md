@@ -61,7 +61,6 @@ You can clone the repository from scratch, adjust cli-config.php with credential
 ```
 composer install && php ./vendor/bin/doctrine orm:schema-tool:create --dump-sql
 ```
-Also execute [init_data.sql](https://github.com/GlobalTradingTechnologies/ad-poller/blob/master/res/init_data.sql) to fill database initially
 
 ### Application setup
 Create poller:

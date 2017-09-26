@@ -14,7 +14,6 @@ namespace Gtt\ADPoller\ORM\Repository;
 
 use Doctrine\ORM\EntityRepository;
 use Gtt\ADPoller\Entity\PollTask;
-use Gtt\ADPoller\Entity\PollTaskStatus;
 
 /**
  * PollTask repository
@@ -30,6 +29,6 @@ class PollTaskRepository extends EntityRepository
      */
     public function findLastSuccessful()
     {
-        return $this->findOneBy(['status' => PollTaskStatus::SUCCEEDED], ['closed' => 'desc']);
+        return $this->findOneBy(['status' => PollTask::STATUS_SUCCEED], ['closed' => 'desc']);
     }
 }

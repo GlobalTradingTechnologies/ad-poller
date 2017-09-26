@@ -167,11 +167,11 @@ class Poller
                 $usnChangedStartFrom = $lastSuccessfulPollTask->getMaxUSNChangedValue() + 1;
                 $fetchedEntriesCount = $this->incrementalSync($currentTask, $usnChangedStartFrom, $highestCommitedUSN);
             }
-            $currentTask->succeed($this->entityManager, $fetchedEntriesCount);
+            $currentTask->succeed($fetchedEntriesCount);
 
             return $fetchedEntriesCount;
         } catch (Exception $e) {
-            $currentTask->fail($this->entityManager, $e->getMessage());
+            $currentTask->fail($e->getMessage());
             throw $e;
         } finally {
             $this->entityManager->flush();
@@ -192,7 +192,6 @@ class Poller
     protected function createCurrentPollTask($invocationId, $highestCommitedUSN, $rootDseDnsHostName, $lastSuccessfulPollTask, $isFullSync)
     {
         $currentTask = new PollTask(
-            $this->entityManager,
             $this->name,
             $invocationId,
             $highestCommitedUSN,

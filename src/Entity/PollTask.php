@@ -13,7 +13,6 @@
 namespace Gtt\ADPoller\Entity;
 
 use DateTime;
-use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -26,6 +25,21 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class PollTask
 {
+    /**
+     * Status for the running state
+     */
+    const STATUS_RUNNING = 1;
+
+    /**
+     * Status for the state when task was successfully finished
+     */
+    const STATUS_SUCCEED = 2;
+
+    /**
+     * Status for the state when task was failed
+     */
+    const STATUS_FAILED = 3;
+
     /**
      * @var int
      *
@@ -85,12 +99,12 @@ class PollTask
     private $isFullSync;
 
     /**
-     * Status
+     * Status of the task
      *
-     * @var PollTaskStatus
+     * @var integer
      *
-     * @ORM\ManyToOne(targetEntity="PollTaskStatus")
-     * @ORM\JoinColumn(name="status_id", referencedColumnName="id", nullable=false)
+     * @ORM\Column(name="status_id", type="integer", nullable=false,
+     *     options={"comment": "Task status"})
      */
     private $status;
 
@@ -145,12 +159,14 @@ class PollTask
     /**
      * PollTask constructor.
      *
-     * @param string $invocationId
-     * @param int    $maxUSNChangedValue
-     * @param string $rootDseDnsHostName
+     * @param string                 $pollerName
+     * @param string                 $invocationId
+     * @param int                    $maxUSNChangedValue
+     * @param string                 $rootDseDnsHostName
+     * @param PollTask|null          $parent
+     * @param bool                   $isFullSync
      */
     public function __construct(
-        EntityManagerInterface $em,
         $pollerName,
         $invocationId,
         $maxUSNChangedValue,
@@ -162,22 +178,22 @@ class PollTask
         $this->invocationId       = $invocationId;
         $this->maxUSNChangedValue = $maxUSNChangedValue;
         $this->rootDseDnsHostName = $rootDseDnsHostName;
-        $this->status             = $em->getReference(PollTaskStatus::class, PollTaskStatus::RUNNING);
+        $this->status             = self::STATUS_RUNNING;
         $this->parent             = $parent;
         $this->isFullSync         = $isFullSync;
         $this->created            = new DateTime();
     }
 
-    public function succeed(EntityManagerInterface $em, $fetchedEntitiesAmount)
+    public function succeed($fetchedEntitiesAmount)
     {
-        $this->status                = $em->getReference(PollTaskStatus::class, PollTaskStatus::SUCCEEDED);
+        $this->status                = self::STATUS_SUCCEED;
         $this->fetchedEntitiesAmount = $fetchedEntitiesAmount;
         $this->closed                = new DateTime();
     }
 
-    public function fail(EntityManagerInterface $em, $errorMessage)
+    public function fail($errorMessage)
     {
-        $this->status       = $em->getReference(PollTaskStatus::class, PollTaskStatus::FAILED);
+        $this->status       = self::STATUS_FAILED;
         $this->errorMessage = $errorMessage;
         $this->closed       = new DateTime();
     }

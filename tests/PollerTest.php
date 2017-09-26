@@ -33,7 +33,7 @@ class PollerTest extends PHPUnit_Framework_TestCase
         // check full sync mode
         $fetcher->fullFetch(Argument::any())->willReturn([['entry1'], ['entry2']]);
         $synchronizer->fullSync(Argument::any(), Argument::any(), Argument::any())->shouldBeCalled();
-        $resultTask->expects($this->once())->method('succeed')->with($this->anything(), 2);
+        $resultTask->expects($this->once())->method('succeed')->with(2);
 
         $this->assertEquals(2, $poller->poll($forceFullSync));
     }
@@ -65,7 +65,7 @@ class PollerTest extends PHPUnit_Framework_TestCase
         // check inc sync mode
         $fetcher->incrementalFetch(100500 + 1, 123, true)->willReturn([[['entry1']], [['entry2'], ['entry3']]]);
         $synchronizer->incrementalSync(Argument::any(), Argument::any(), [['entry1']], [['entry2'], ['entry3']])->shouldBeCalled();
-        $resultTask->expects($this->once())->method('succeed')->with($this->anything(), 3);
+        $resultTask->expects($this->once())->method('succeed')->with(3);
 
         $this->assertEquals(3, $poller->poll());
     }
@@ -82,7 +82,7 @@ class PollerTest extends PHPUnit_Framework_TestCase
         // check inc sync mode
         $fetcher->incrementalFetch(100500 + 1, 123, false)->willReturn([[['entry1']], [['entry2']]]);
         $synchronizer->incrementalSync(Argument::any(), Argument::any(), [['entry1']], [['entry2']])->shouldBeCalled();
-        $resultTask->expects($this->once())->method('succeed')->with($this->anything(), 2);
+        $resultTask->expects($this->once())->method('succeed')->with(2);
 
         $this->assertEquals(2, $poller->poll());
     }
