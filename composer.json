@@ -11,7 +11,7 @@
     ],
     "require": {
         "php": ">=5.5",
-        "zendframework/zend-ldap": "^2.8",
+        "zendframework/zend-ldap": "^2.3",
         "symfony/event-dispatcher": "^2.3|^3.0",
         "doctrine/orm": "^2.5",
         "symfony/console": "^2.3|^3.0"
