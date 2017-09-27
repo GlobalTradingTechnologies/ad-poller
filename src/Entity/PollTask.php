@@ -20,7 +20,7 @@ use Doctrine\ORM\Mapping as ORM;
  *
  * @author fduch <alex.medwedew@gmail.com>
  *
- * @ORM\Table(name="poll_task", options={"comment": "Poll task"})
+ * @ORM\Table(name="poll_task", options={"comment": "Poll task representation"})
  * @ORM\Entity(repositoryClass="Gtt\ADPoller\ORM\Repository\PollTaskRepository")
  */
 class PollTask
@@ -65,7 +65,7 @@ class PollTask
      * @var string
      *
      * @ORM\Column(name="invocation_id", type="string", length=40, nullable=false,
-     *     options={"comment": "Invocation ID"})
+     *     options={"comment": "Invocation ID of current poll task"})
      */
     private $invocationId;
 
@@ -75,7 +75,7 @@ class PollTask
      * @var integer
      *
      * @ORM\Column(name="max_usnchanged_value", type="integer", nullable=false,
-     *     options={"comment": "Invocation ID"})
+     *     options={"comment": "Max usnChanged value for current poll run", "unsigned"=true})
      */
     private $maxUSNChangedValue;
 
@@ -92,7 +92,7 @@ class PollTask
     /**
      * Flag holds information about full/partial sync provided by current task
      *
-     * @ORM\Column(type="boolean", name="is_full_sync", options={"comment": "Full or partial sync processing"})
+     * @ORM\Column(type="boolean", name="is_full_sync", options={"comment": "Type of current poll task: full or incremental sync"})
      *
      * @var boolean
      */
@@ -104,7 +104,7 @@ class PollTask
      * @var integer
      *
      * @ORM\Column(name="status_id", type="integer", nullable=false,
-     *     options={"comment": "Task status"})
+     *     options={"comment": "Task status. 1 for running, 2 for succeeded, 3 for failed"})
      */
     private $status;
 
@@ -114,7 +114,7 @@ class PollTask
      * @var integer
      *
      * @ORM\Column(name="fetched_entities_amount", type="integer", nullable=true,
-     *     options={"comment": "Amount of successfully fetched entries"})
+     *     options={"comment": "Amount of fetched entries in case of success", "unsigned"=true})
      */
     private $fetchedEntitiesAmount;
 
@@ -133,7 +133,7 @@ class PollTask
      *
      * @var \Datetime
      *
-     * @ORM\Column(type="datetime", name="created_ts", columnDefinition="TIMESTAMP NULL DEFAULT NULL")
+     * @ORM\Column(type="datetime", name="created_ts", columnDefinition="TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP")
      */
     private $created;
 
