@@ -20,7 +20,7 @@ use Doctrine\ORM\Mapping as ORM;
  *
  * @author fduch <alex.medwedew@gmail.com>
  *
- * @ORM\Table(name="poll_task", options={"comment": "Poll task representation"})
+ * @ORM\Table(name="active_directory_poll_task", options={"comment": "Poll task representation"})
  * @ORM\Entity(repositoryClass="Gtt\ADPoller\ORM\Repository\PollTaskRepository")
  */
 class PollTask
@@ -74,7 +74,7 @@ class PollTask
      *
      * @var integer
      *
-     * @ORM\Column(name="max_usnchanged_value", type="integer", nullable=false,
+     * @ORM\Column(name="max_usnchanged_value", type="bigint", nullable=false,
      *     options={"comment": "Max usnChanged value for current poll run", "unsigned"=true})
      */
     private $maxUSNChangedValue;
