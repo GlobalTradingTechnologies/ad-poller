@@ -25,10 +25,12 @@ class PollTaskRepository extends EntityRepository
     /**
      * Returns last successful finished task
      *
+     * @param string $pollerName poller name
+     *
      * @return PollTask|null
      */
-    public function findLastSuccessful()
+    public function findLastSuccessfulForPoller($pollerName)
     {
-        return $this->findOneBy(['status' => PollTask::STATUS_SUCCEED], ['closed' => 'desc']);
+        return $this->findOneBy(['status' => PollTask::STATUS_SUCCEED, 'pollerName' => $pollerName], ['closed' => 'desc']);
     }
 }

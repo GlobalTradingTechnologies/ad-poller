@@ -142,7 +142,7 @@ class Poller
     {
         /** @var PollTaskRepository $pollTaskRepository */
         $pollTaskRepository     = $this->entityManager->getRepository(PollTask::class);
-        $lastSuccessfulPollTask = $pollTaskRepository->findLastSuccessful();
+        $lastSuccessfulPollTask = $pollTaskRepository->findLastSuccessfulForPoller($this->getName());
 
         $rootDseDnsHostName = $this->fetcher->getRootDseDnsHostName();
         $invocationId       = $this->fetcher->getInvocationId();

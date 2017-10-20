@@ -139,7 +139,7 @@ class PollerTest extends PHPUnit_Framework_TestCase
         } else {
             $lastSuccessfullTask = null;
         }
-        $taskRepository->findLastSuccessful()->willReturn($lastSuccessfullTask);
+        $taskRepository->findLastSuccessfulForPoller('poller1')->willReturn($lastSuccessfullTask);
 
         $em->getRepository(PollTask::class)->willReturn($taskRepository);
         $em->persist(Argument::type(PollTask::class))->shouldBeCalled();
@@ -166,7 +166,8 @@ class PollerTest extends PHPUnit_Framework_TestCase
                 $fetcher->reveal(),
                 $synchronizer->reveal(),
                 $em->reveal(),
-                $detectDeleted
+                $detectDeleted,
+                'poller1'
             ])
             ->setMethods(['createCurrentPollTask'])
             ->getMock();
