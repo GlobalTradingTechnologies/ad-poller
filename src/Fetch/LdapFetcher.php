@@ -14,10 +14,10 @@ namespace Gtt\ADPoller\Fetch;
 
 use Gtt\ADPoller\Exception\UnsupportedRootDseException;
 use InvalidArgumentException;
-use Zend\Ldap\Filter\AbstractFilter;
-use Zend\Ldap\Filter;
-use Zend\Ldap\Ldap;
-use Zend\Ldap\Node\RootDse\ActiveDirectory;
+use Laminas\Ldap\Filter\AbstractFilter;
+use Laminas\Ldap\Filter;
+use Laminas\Ldap\Ldap;
+use Laminas\Ldap\Node\RootDse\ActiveDirectory;
 
 /**
  * Fetches Active Directory resource using ldap API

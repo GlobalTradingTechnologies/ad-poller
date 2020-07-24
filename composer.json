@@ -10,8 +10,8 @@
         }
     ],
     "require": {
-        "php": ">=5.5",
-        "zendframework/zend-ldap": "^2.3",
+        "php": ">=5.5|^7.0",
+        "laminas/laminas-ldap": "^2.10",
         "symfony/event-dispatcher": "^2.3|^3.0",
         "doctrine/orm": "^2.5",
         "symfony/console": "^2.3|^3.0"

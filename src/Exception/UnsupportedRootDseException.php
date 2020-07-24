@@ -13,7 +13,7 @@
 namespace Gtt\ADPoller\Exception;
 
 use RuntimeException;
-use Zend\Ldap\Node\RootDse\ActiveDirectory;
+use Laminas\Ldap\Node\RootDse\ActiveDirectory;
 
 /**
  * Exception for case when there is an attempt to handle non-supported RootDse's
