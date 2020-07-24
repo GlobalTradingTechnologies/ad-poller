@@ -14,10 +14,10 @@ namespace Gtt\ADPoller\Fetch;
 
 use Prophecy\Argument;
 use Prophecy\Prophecy\ObjectProphecy;
-use Zend\Ldap\Filter\AbstractFilter;
-use Zend\Ldap\Filter;
-use Zend\Ldap\Ldap;
-use Zend\Ldap\Node\RootDse\ActiveDirectory;
+use Laminas\Ldap\Filter\AbstractFilter;
+use Laminas\Ldap\Filter;
+use Laminas\Ldap\Ldap;
+use Laminas\Ldap\Node\RootDse\ActiveDirectory;
 
 class LdapFetcherTest extends \PHPUnit_Framework_TestCase
 {
